@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Xml.Linq;
 
@@ -23,6 +24,7 @@ namespace GIExerciseNo6
             samples.Linq8();
             samples.Linq9();
             samples.Linq10();
+            Console.ReadLine();
         }
 
         public class Product
@@ -63,62 +65,105 @@ namespace GIExerciseNo6
             [Description("Find all products that are out of stock.")]
             public void Linq1()
             {
-                List<Product> products = GetProductList();
+                Console.WriteLine("Q1-----------------------------------------------");
+                List<Product> products = GetProductList().Where(p => p.UnitsInStock < 1).ToList();
+                ObjectDumper.Write(products);
+                Console.ReadLine();
             }
 
             [Description("Find all products that are in stock and cost more than 3.00 per unit.")]
-            public void Linq2()
+            public void Linq2() 
             {
-                List<Product> products = GetProductList();
+                Console.WriteLine("Q2-----------------------------------------------");
+                List<Product> products = GetProductList().Where(p => p.UnitPrice > 3 && p.UnitsInStock > 0).ToList();
+                ObjectDumper.Write(products);
+                Console.ReadLine();
             }
 
-            [Description("Find all customers in Washington and then it uses a foreach loop to iterate over the orders collection that belongs to each customer.")]
+            [Description("Find all customers in Washington and then it uses a foreach loop to " +
+                         "iterate over the orders collection that belongs to each customer.")]
             public void Linq3()
             {
-                List<Customer> customers = GetCustomerList();
+                Console.WriteLine("Q3-----------------------------------------------");
+                List<Customer> customers = GetCustomerList().Where(c => c.Region == "WA").ToList();
+                foreach (var customer in customers)
+                {
+                    ObjectDumper.Write(customer);
+                    ObjectDumper.Write(customer.Orders);
+                }
+                Console.ReadLine();
             }
 
             [Description("Get the first 3 orders from customers in Washington. Use the ObjectDumper to show.")]
             public void Linq4()
             {
-                List<Customer> customers = GetCustomerList();
+                Console.WriteLine("Q4-----------------------------------------------");
+                var customerOrder = GetCustomerList()
+                    .Where(c => c.Region == "WA")
+                    .SelectMany(c => (c.Orders)
+                    .Select(o=>new{c.CustomerID, o.OrderID})).Take(3);
+                ObjectDumper.Write(customerOrder);
+                Console.ReadLine();
             }
 
             [Description("Get all but the first 2 orders from customers in Washington. Use the ObjectDumper to show.")]
             public void Linq5()
             {
-                List<Customer> customers = GetCustomerList(); ;
+                Console.WriteLine("Q5-----------------------------------------------");
+                var customerOrder = GetCustomerList()
+                    .Where(c => c.Region == "WA")
+                    .SelectMany(c => (c.Orders)
+                        .Select(o => new { c.CustomerID, o.OrderID })).Skip(2);
+                ObjectDumper.Write(customerOrder);
+                Console.ReadLine();
             }
 
             [Description("Return the first matching element that the UnitsInStock is 0. Use the ObjectDumper to show.")]
             public void Linq6()
             {
-                List<Product> products = GetProductList();
+                Console.WriteLine("Q6-----------------------------------------------");
+                Product product = GetProductList().FirstOrDefault(p => p.UnitsInStock == 0);
+                ObjectDumper.Write(product);
+                Console.ReadLine();
             }
 
             [Description("Use the ObjectDumper to show just ProductName, Category, UnitPrice from Product")]
             public void Linq7()
             {
-                List<Product> products = GetProductList();
+                Console.WriteLine("Q7-----------------------------------------------");
+                var products = GetProductList().Select(p => new { p.ProductName, p.Category, p.UnitPrice }).ToList();
+                ObjectDumper.Write(products);
+                Console.ReadLine();
             }
 
             [Description("Produce a sequence of ints one higher than those in an existing array of ints. (it mean +=1)")]
             public void Linq8()
             {
-                int[] numbers = { 5, 4, 1, 3, 9, 8, 6, 7, 2, 0 }; ;
+                Console.WriteLine("Q8-----------------------------------------------");
+                int[] numbers = { 5, 4, 1, 3, 9, 8, 6, 7, 2, 0 };
+                var numberAddOne = numbers.Select(n => n + 1);
+                ObjectDumper.Write(numberAddOne);
+                Console.ReadLine();
             }
 
             [Description("Returns the digit text form of each digit less than 5.")]
             public void Linq9()
             {
+                Console.WriteLine("Q9-----------------------------------------------");
                 int[] numbers = { 5, 4, 1, 3, 9, 8, 6, 7, 2, 0 }; ;
                 string[] digits = { "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" };
+                var nValue = numbers.Where(n => n < 5).Select(n=> digits[n]);
+                ObjectDumper.Write(nValue);
+                Console.ReadLine();
             }
 
             [Description("Partition a list of products by category. just show Category and ProductName")]
             public void Linq10()
             {
-                List<Product> products = GetProductList(); ;
+                Console.WriteLine("Q10-----------------------------------------------");
+                var products = GetProductList().OrderBy(p=>p.Category).Select(p=>new{p.Category, p.ProductName});
+                ObjectDumper.Write(products);
+                Console.ReadLine();
             }
 
             public List<Product> GetProductList()
